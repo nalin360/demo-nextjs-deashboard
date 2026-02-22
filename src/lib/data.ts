@@ -1,7 +1,4 @@
-import { setupWorker } from 'msw/browser';
-import { http, HttpResponse } from 'msw';
-
-const companies = {
+export const companies = {
   AAPL: {
     name: 'Apple Inc.',
     ticker: 'AAPL',
@@ -103,19 +100,3 @@ const companies = {
     ]
   }
 };
-
-export const handlers = [
-  http.get('/api/companies', () => {
-    return HttpResponse.json(Object.keys(companies));
-  }),
-  http.get('/api/company/:ticker', ({ params }) => {
-    const { ticker } = params;
-    const company = companies[ticker as keyof typeof companies];
-    if (company) {
-      return HttpResponse.json(company);
-    }
-    return new HttpResponse(null, { status: 404 });
-  })
-];
-
-export const worker = setupWorker(...handlers);

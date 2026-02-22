@@ -1,37 +1,27 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { CompanyInfo } from '@/src/types';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  AreaChart,
-  Area
-} from 'recharts';
-import { TrendingUp, TrendingDown, Info, DollarSign, BarChart3, Activity, Globe } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { TrendingUp, TrendingDown, DollarSign, BarChart3, Activity, Globe } from 'lucide-react';
+import { motion } from 'motion/react';
 import { cn } from '@/src/lib/utils';
+import CompanyChart from './CompanyChart';
+import { useMarketStore } from '@/src/store/useMarketStore';
 
-interface CompanyViewProps {
-  ticker: string;
-}
-
-export default function CompanyView({ ticker }: CompanyViewProps) {
+export default function CompanyView() {
+  const selectedTicker = useMarketStore((state) => state.selectedTicker);
   const [company, setCompany] = useState<CompanyInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/company/${ticker}`)
+    fetch(`/api/company/${selectedTicker}`)
       .then(res => res.json())
       .then(data => {
         setCompany(data);
         setLoading(false);
       });
-  }, [ticker]);
+  }, [selectedTicker]);
 
   if (loading || !company) {
     return (
@@ -92,65 +82,7 @@ export default function CompanyView({ ticker }: CompanyViewProps) {
       </div>
 
       {/* Chart Section */}
-      <div className="bg-white p-8 rounded-3xl border border-zinc-200 shadow-sm overflow-hidden relative">
-        <div className="flex items-center justify-between mb-8">
-          <h3 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-            <Activity className="w-5 h-5 text-zinc-400" />
-            Performance History
-          </h3>
-          <div className="flex gap-2">
-            {['1D', '1W', '1M', '1Y', 'ALL'].map(t => (
-              <button key={t} className={cn(
-                "px-3 py-1 text-xs font-bold rounded-full transition-all",
-                t === '1M' ? "bg-zinc-900 text-white" : "text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100"
-              )}>
-                {t}
-              </button>
-            ))}
-          </div>
-        </div>
-        
-        <div className="h-[350px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={company.history}>
-              <defs>
-                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={isPositive ? "#10b981" : "#f43f5e"} stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor={isPositive ? "#10b981" : "#f43f5e"} stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f1f1" />
-              <XAxis 
-                dataKey="date" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fontSize: 12, fill: '#a1a1aa' }}
-                dy={10}
-              />
-              <YAxis 
-                hide 
-                domain={['dataMin - 10', 'dataMax + 10']}
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  borderRadius: '12px', 
-                  border: 'none', 
-                  boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-                  padding: '12px'
-                }}
-              />
-              <Area 
-                type="monotone" 
-                dataKey="value" 
-                stroke={isPositive ? "#10b981" : "#f43f5e"} 
-                strokeWidth={3}
-                fillOpacity={1} 
-                fill="url(#colorValue)" 
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      <CompanyChart history={company.history} isPositive={isPositive} />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

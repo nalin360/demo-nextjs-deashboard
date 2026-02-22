@@ -1,22 +1,23 @@
 import { User, ShoppingCart, BarChart2, Bell, Search } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
+import Link from 'next/link';
 
 export default function Navbar() {
   return (
     <nav className="h-16 border-b border-zinc-200 bg-white flex items-center justify-between px-6 sticky top-0 z-10">
       <div className="flex items-center gap-8">
-        <div className="flex items-center gap-2 font-bold text-xl text-zinc-900">
+        <Link href="/" className="flex items-center gap-2 font-bold text-xl text-zinc-900">
           <div className="w-8 h-8 bg-zinc-900 rounded flex items-center justify-center text-white">
             M
           </div>
           MarketPulse
-        </div>
+        </Link>
         
         <div className="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-500">
-          <a href="#" className="text-zinc-900 border-b-2 border-zinc-900 py-5">Overview</a>
-          <a href="#" className="hover:text-zinc-900 transition-colors py-5">Markets</a>
-          <a href="#" className="hover:text-zinc-900 transition-colors py-5">Portfolio</a>
-          <a href="#" className="hover:text-zinc-900 transition-colors py-5">News</a>
+          <Link href="/" className="text-zinc-900 border-b-2 border-zinc-900 py-5">Overview</Link>
+          <Link href="#" className="hover:text-zinc-900 transition-colors py-5">Markets</Link>
+          <Link href="#" className="hover:text-zinc-900 transition-colors py-5">Portfolio</Link>
+          <Link href="#" className="hover:text-zinc-900 transition-colors py-5">News</Link>
         </div>
       </div>
 

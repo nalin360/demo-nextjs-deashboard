@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useRef } from 'react';
 import { 
   TrendingUp, 
@@ -16,12 +18,10 @@ import {
 import { cn } from '@/src/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 
-interface SidebarProps {
-  onSelectTicker: (ticker: string) => void;
-  selectedTicker: string;
-}
+import { useMarketStore } from '@/src/store/useMarketStore';
 
-export default function Sidebar({ onSelectTicker, selectedTicker }: SidebarProps) {
+export default function Sidebar() {
+  const { selectedTicker, setSelectedTicker } = useMarketStore();
   const [tickers, setTickers] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -139,7 +139,7 @@ export default function Sidebar({ onSelectTicker, selectedTicker }: SidebarProps
             filteredTickers.map(ticker => (
               <button
                 key={ticker}
-                onClick={() => onSelectTicker(ticker)}
+                onClick={() => setSelectedTicker(ticker)}
                 title={isCollapsed ? ticker : undefined}
                 className={cn(
                   "w-full flex items-center p-3 rounded-lg transition-all group relative",
@@ -149,7 +149,10 @@ export default function Sidebar({ onSelectTicker, selectedTicker }: SidebarProps
                     : "text-zinc-500 hover:bg-zinc-200/50 hover:text-zinc-900"
                 )}
               >
-                <div className="flex items-center gap-3 overflow-hidden">
+                <div className={cn(
+                  "flex items-center overflow-hidden",
+                  isCollapsed ? "gap-0" : "gap-3"
+                )}>
                   <div className={cn(
                     "w-8 h-8 rounded flex items-center justify-center font-bold text-xs shrink-0 transition-colors",
                     selectedTicker === ticker ? "bg-zinc-900 text-white" : "bg-zinc-200 text-zinc-600 group-hover:bg-zinc-300"
@@ -186,15 +189,15 @@ export default function Sidebar({ onSelectTicker, selectedTicker }: SidebarProps
 
       <div className="mt-auto p-4 border-t border-zinc-200 space-y-1 shrink-0">
         <button className={cn(
-          "w-full flex items-center gap-3 p-3 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-200/50 rounded-lg transition-colors",
-          isCollapsed ? "justify-center" : "justify-start"
+          "w-full flex items-center p-3 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-200/50 rounded-lg transition-colors",
+          isCollapsed ? "justify-center gap-0" : "justify-start gap-3"
         )}>
           <Settings className="w-5 h-5 shrink-0" />
           {!isCollapsed && <span className="text-sm font-medium whitespace-nowrap">Settings</span>}
         </button>
         <button className={cn(
-          "w-full flex items-center gap-3 p-3 text-red-500 hover:bg-red-50 rounded-lg transition-colors",
-          isCollapsed ? "justify-center" : "justify-start"
+          "w-full flex items-center p-3 text-red-500 hover:bg-red-50 rounded-lg transition-colors",
+          isCollapsed ? "justify-center gap-0" : "justify-start gap-3"
         )}>
           <LogOut className="w-5 h-5 shrink-0" />
           {!isCollapsed && <span className="text-sm font-medium whitespace-nowrap">Logout</span>}
