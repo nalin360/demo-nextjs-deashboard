@@ -16,9 +16,16 @@ export default function CompanyView() {
   useEffect(() => {
     setLoading(true);
     fetch(`/api/company/${selectedTicker}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch company');
+        return res.json();
+      })
       .then(data => {
         setCompany(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching company:', err);
         setLoading(false);
       });
   }, [selectedTicker]);

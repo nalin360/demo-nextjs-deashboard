@@ -34,6 +34,10 @@ export default function Sidebar() {
       .then(data => {
         setTickers(data);
         setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch companies:', err);
+        setLoading(false);
       });
   }, []);
 

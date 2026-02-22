@@ -4,21 +4,28 @@ import React, { useState, useEffect } from 'react';
 import { CompanyInfo } from '@/src/types';
 import CompanyChart from './CompanyChart';
 import { ArrowLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function FullScreenChart() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [company, setCompany] = useState<CompanyInfo | null>(null);
   const [loading, setLoading] = useState(true);
   
-  const params = new URLSearchParams(window.location.search);
-  const ticker = params.get('ticker') || 'AAPL';
+  const ticker = searchParams.get('ticker') || 'AAPL';
 
   useEffect(() => {
     fetch(`/api/company/${ticker}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch company');
+        return res.json();
+      })
       .then(data => {
         setCompany(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching company:', err);
         setLoading(false);
       });
   }, [ticker]);

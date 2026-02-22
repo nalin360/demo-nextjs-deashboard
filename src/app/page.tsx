@@ -1,38 +1,16 @@
-"use client";
-
-import Navbar from '../components/Navbar';
-import Sidebar from '../components/Sidebar';
-import CompanyView from '../components/CompanyView';
-import FullScreenChart from '../components/FullScreenChart';
-import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-
-function DashboardContent() {
-  const searchParams = useSearchParams();
-  const isFullScreen = searchParams.get('view') === 'chart';
-
-  if (isFullScreen) {
-    return <FullScreenChart />;
-  }
-
-  return (
-    <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 selection:bg-zinc-900 selection:text-white">
-      <Navbar />
-      
-      <div className="flex">
-        <Sidebar />
-        
-        <main className="flex-1 min-h-[calc(100vh-64px)] overflow-y-auto">
-          <CompanyView />
-        </main>
-      </div>
-    </div>
-  );
-}
+import DashboardContent from '@/src/components/DashboardContent';
 
 export default function Home() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={
+      <div className="h-screen w-screen flex items-center justify-center bg-zinc-50 font-sans text-zinc-400">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-zinc-200 border-t-zinc-900 rounded-full animate-spin"></div>
+          <p className="text-sm font-medium animate-pulse">Initializing Dashboard...</p>
+        </div>
+      </div>
+    }>
       <DashboardContent />
     </Suspense>
   );
