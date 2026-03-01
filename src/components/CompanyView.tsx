@@ -7,28 +7,12 @@ import { motion } from 'motion/react';
 import { cn } from '@/src/lib/utils';
 import CompanyChart from './CompanyChart';
 import { useMarketStore } from '@/src/store/useMarketStore';
+import { useCompanyDetails } from '@/src/hooks/useCompanyDetails';
 
 export default function CompanyView() {
   const selectedTicker = useMarketStore((state) => state.selectedTicker);
-  const [company, setCompany] = useState<CompanyInfo | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setLoading(true);
-    fetch(`/api/company/${selectedTicker}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch company');
-        return res.json();
-      })
-      .then(data => {
-        setCompany(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error fetching company:', err);
-        setLoading(false);
-      });
-  }, [selectedTicker]);
+  const { data: company, isLoading: loading } = useCompanyDetails(selectedTicker);
 
   if (loading || !company) {
     return (

@@ -17,48 +17,24 @@ import {
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
+import { useCompanies } from '@/src/hooks/useCompanies';
+import { useTickerSearch } from '@/src/hooks/useTickerSearch';
 
 import { useMarketStore } from '@/src/store/useMarketStore';
 
 export default function Sidebar() {
   const { selectedTicker, setSelectedTicker } = useMarketStore();
-  const [tickers, setTickers] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    fetch('/api/companies')
-      .then(res => res.json())
-      .then(data => {
-        setTickers(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch companies:', err);
-        setLoading(false);
-      });
-  }, []);
+  const { data: tickers = [], isLoading: loading } = useCompanies();
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        setIsCollapsed(false);
-        setTimeout(() => {
-          searchInputRef.current?.focus();
-        }, 100);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const filteredTickers = tickers.filter(t => 
-    t.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Use the custom hook for search, filtering, and shortcuts
+  const { 
+    searchQuery, 
+    setSearchQuery, 
+    searchInputRef, 
+    filteredTickers 
+  } = useTickerSearch(tickers, () => setIsCollapsed(false));
 
   return (
     <motion.aside 
